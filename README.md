@@ -50,3 +50,23 @@ spec:
             image: quay.io/eformat/kubevirt-cloud-image:latest
           name: containerdisk
 ```
+
+
+## Bigger VM disk
+
+The size of the VM disk is set by the size of the qcow2 image.
+
+```bash
+cp image.qcow2 image-120G.qcow2
+qemu-img resize image-120G.qcow2 +120G
+```
+
+```bash
+cat > Dockerfile.120g << EOF
+USER root
+FROM scratch
+ADD --chown=107:107 image-120G.qcow2 /disk/
+EOF
+podman build -t quay.io/eformat/kubevirt-cloud-image-120g -f Dockerfile.120g
+podman push quay.io/eformat/kubevirt-cloud-image-120g:latest
+```
